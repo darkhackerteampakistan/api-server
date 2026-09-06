@@ -1,0 +1,17 @@
+{
+  "name": "my-api-server",
+  "version": "1.0.0",
+  "description": "API Server with GitHub JSON Storage",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "@octokit/rest": "^22.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
