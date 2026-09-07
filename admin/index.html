@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>📥 Request Dashboard</h1>
+
+    <div class="stats">
+        <h2>Total Requests: <span id="total">0</span></h2>
+    </div>
+
+    <input
+        type="text"
+        id="search"
+        placeholder="🔍 Search by name or message..."
+    >
+
+    <div id="request-list">
+
+        <div class="empty">
+            Loading requests...
+        </div>
+
+    </div>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
