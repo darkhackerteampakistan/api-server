@@ -2,7 +2,7 @@ const FILE_PATH = "data/messages.json";
 const BRANCH = "main";
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
+  if (req.method !== "GET" && req.method !== "POST") {
     return res.status(405).json({
       success: false,
       message: "Method Not Allowed"
@@ -10,7 +10,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { name, message } = req.body;
+    // GET অথবা POST থেকে ডেটা নিন
+    const data = req.method === "GET" ? req.query : req.body;
+
+    const name = data.name || "Anonymous";
+    const message = data.message;
 
     if (!message) {
       return res.status(400).json({
@@ -30,7 +34,8 @@ export default async function handler(req, res) {
     const fileRes = await fetch(api, { headers });
 
     if (!fileRes.ok) {
-      throw new Error("Cannot read messages.json");
+      const err = await fileRes.text();
+      throw new Error(err);
     }
 
     const file = await fileRes.json();
@@ -42,12 +47,13 @@ export default async function handler(req, res) {
     // Add new request
     content.push({
       id: Date.now().toString(),
-      name: name || "Anonymous",
+      name,
       message,
       ip:
         req.headers["x-forwarded-for"] ||
         req.socket?.remoteAddress ||
         "Unknown",
+      method: req.method,
       time: new Date().toISOString()
     });
 
@@ -74,7 +80,11 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: "Saved successfully"
+      message: "Saved successfully",
+      data: {
+        name,
+        message
+      }
     });
 
   } catch (err) {
