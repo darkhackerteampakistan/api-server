@@ -10,16 +10,16 @@ export default async function handler(req, res) {
   }
 
   try {
-    // GET অথবা POST থেকে ডেটা নিন
     const data = req.method === "GET" ? req.query : req.body;
 
     const name = data.name || "Anonymous";
-    const message = data.message;
+    const message = data.message || "";
+    const image = data.image || "";
 
-    if (!message) {
+    if (!message && !image) {
       return res.status(400).json({
         success: false,
-        message: "Message is required"
+        message: "Message or Image is required"
       });
     }
 
@@ -34,8 +34,7 @@ export default async function handler(req, res) {
     const fileRes = await fetch(api, { headers });
 
     if (!fileRes.ok) {
-      const err = await fileRes.text();
-      throw new Error(err);
+      throw new Error(await fileRes.text());
     }
 
     const file = await fileRes.json();
@@ -49,6 +48,7 @@ export default async function handler(req, res) {
       id: Date.now().toString(),
       name,
       message,
+      image,
       ip:
         req.headers["x-forwarded-for"] ||
         req.socket?.remoteAddress ||
@@ -74,8 +74,7 @@ export default async function handler(req, res) {
     });
 
     if (!update.ok) {
-      const err = await update.text();
-      throw new Error(err);
+      throw new Error(await update.text());
     }
 
     return res.status(200).json({
@@ -83,7 +82,8 @@ export default async function handler(req, res) {
       message: "Saved successfully",
       data: {
         name,
-        message
+        message,
+        image
       }
     });
 
