@@ -1,17 +1,25 @@
-import fs from "fs";
-import path from "path";
+const FILE_PATH = "data/messages.json";
 
 export default async function handler(req, res) {
   try {
-    const filePath = path.join(process.cwd(), "data", "messages.json");
+    const headers = {
+      Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+      Accept: "application/vnd.github+json"
+    };
 
-    if (!fs.existsSync(filePath)) {
-      return res.status(200).json([]);
+    const api = `https://api.github.com/repos/${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO}/contents/${FILE_PATH}`;
+
+    const response = await fetch(api, { headers });
+
+    if (!response.ok) {
+      throw new Error("Cannot load messages.json");
     }
 
-    const file = fs.readFileSync(filePath, "utf8");
+    const file = await response.json();
 
-    const data = file ? JSON.parse(file) : [];
+    const data = JSON.parse(
+      Buffer.from(file.content, "base64").toString("utf8")
+    );
 
     return res.status(200).json(data);
 
